@@ -60,6 +60,8 @@
         listProducts.value = response.data.products;
     };
 
+    
+
    
 
 
@@ -143,7 +145,7 @@
             <div class="table__footer">
                 <div class="document-footer" >
                     <p>Terms and Conditions</p>
-                    <textarea cols="50" rows="7" class="textarea" ></textarea>
+                    <textarea cols="50" rows="7" class="textarea" v-model="form.terms_and_conditions" ></textarea>
                 </div>
                 <div>
                     <div class="table__footer--subtotal">

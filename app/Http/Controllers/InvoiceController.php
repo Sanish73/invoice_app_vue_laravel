@@ -56,7 +56,7 @@ class InvoiceController extends Controller
             'due_date'=>null,
             'reference'=>null,
             'discount'=>0,
-            'terms and conditions' =>'Default Terms and conditions',
+            'terms_and_conditions' =>'Default Terms and conditions',
             'tems'=>[
                 [
                     'product_id'=>null,
