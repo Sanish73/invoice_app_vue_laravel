@@ -18,6 +18,42 @@ class InvoiceController extends Controller
         ],200);
     }
 
+    public function add_invoice(Request $request){
+        $invoiceItem =$request->input('invoice_item');
+
+        // Retrieve other fields
+        $invoiceItem['Customer_Id'] = $request->input('Customer_Id');
+        $invoiceItem['data'] = $request->input('data');
+        $invoiceItem['due_date'] = $request->input('due_date');
+        $invoiceItem['number'] = $request->input('number');
+        $invoiceItem['reference'] = $request->input('reference');
+        $invoiceItem['discount'] = $request->input('discount');
+        $invoiceItem['subtotal'] = $request->input('subtotal');
+        $invoiceItem['total'] = $request->input('total');
+        $invoiceItem['terms_and_conditions'] = $request->input('terms_and_conditions');
+
+        // Process the data (e.g., save to database, validate, etc.)
+        // Example:
+        // $invoice = new Invoice();
+        // $invoice->customer_id = $customerId;
+        // $invoice->date = $date;
+        // $invoice->due_date = $dueDate;
+        // $invoice->number = $number;
+        // $invoice->reference = $reference;
+        // $invoice->discount = $discount;
+        // $invoice->subtotal = $subtotal;
+        // $invoice->total = $total;
+        // $invoice->terms_and_conditions = $termsAndConditions;
+        // $invoice->save();
+
+     
+        return response()->json([
+            'success' => true,
+            'data' =>$invoiceItem['data'],
+            'message' => 'Invoice added successfully'
+        ]);
+    }
+
     public function search_invoices(Request $req){
        $search = $req->get('s');
        if ($search != null) {

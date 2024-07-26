@@ -2,6 +2,7 @@
 
     import axios from 'axios';
     import { onMounted  , ref} from 'vue';
+import router from '../../router';
 
 
     let form = ref([]);
@@ -67,9 +68,41 @@
     
     const getProducts = async()=>{
         let response = await axios.get("/api/products");
-        console.log(response);
         listProducts.value = response.data.products;
     };
+
+    const onSave = ()=>{
+        if(listCart.value.length >=1){
+            let subTotals = 0;
+            subTotals = SubTotal();
+
+            let total = 0;
+            total = Total();
+
+            const formData = new FormData()
+            formData.append('invoice_item' ,JSON.stringify(listCart.value));
+            
+            formData.append('Customer_Id' ,customer_id.value );
+            formData.append('invoice item' ,listCart.value);
+            formData.append('data' ,form.value.date);
+            formData.append('due_date' ,form.value.due_date);
+            formData.append('number' ,form.value.number);
+            formData.append('reference' ,form.value.reference);
+            formData.append('discount' ,form.value.discount);
+            formData.append('subtotal' ,form.value.subtotal);
+            formData.append('total' ,form.value.total);
+            formData.append('terms_and_conditions' ,form.value.terms_and_conditions);
+            
+            axios.post("/api/add_invoice" ,formData);
+            listCart.value = [];
+            router.push('/');            
+
+
+        }
+    };
+    
+   
+    
 </script>
 
 
@@ -175,7 +208,7 @@
                 
             </div>
             <div>
-                <a class="btn btn-secondary">
+                <a class="btn btn-secondary" @click="onSave()">
                     Save
                 </a>
             </div>
@@ -207,7 +240,7 @@
                 <button class="btn btn-light mr-2 btn__close--modal" @click="closeModel()">
                     Cancel
                 </button>
-                <button class="btn btn-light btn__close--modal ">Save</button>
+                <button class="btn btn-light btn__close--modal " >Save</button>
             </div>
         </div>
     </div>
