@@ -32,16 +32,27 @@
 
     const addCart = (item)=>{
        const itemCart = {
-        id:item.id,
-        iteam_cart:item.ite_code,
-        description :item.description,
-        unit_price: item.unit_price,
-        quantity :item.quantity,
-       }
+            id:item.id,
+            iteam_cart:item.ite_code,
+            description :item.description,
+            unit_price: item.unit_price,
+            quantity :item.quantity ?? 1,
+        }
        listCart.value.push(itemCart);
        closeModel();
     };
-    
+
+    const SubTotal = ()=>{
+        let total = 0;
+        listCart.value.map((data=>{
+            total += data.quantity * data.unit_price;
+        }))
+        return total;
+    };
+    const Total = ()=>{
+        return SubTotal() - form.value.discount;
+    };
+
     const openModal = ()=>{
       showModal.value =! showModal.value;
     };
@@ -53,18 +64,12 @@
     const removeItem = (i)=>{
         listCart.value.splice(i, 1);
     };
-
+    
     const getProducts = async()=>{
         let response = await axios.get("/api/products");
         console.log(response);
         listProducts.value = response.data.products;
     };
-
-    
-
-   
-
-
 </script>
 
 
@@ -150,15 +155,15 @@
                 <div>
                     <div class="table__footer--subtotal">
                         <p>Sub Total</p>
-                        <span>$ 1000</span>
+                        <span>$ {{SubTotal()}}</span>
                     </div>
                     <div class="table__footer--discount">
                         <p>Discount</p>
-                        <input type="text" class="input">
+                        <input type="text" class="input" v-model="form.discount">
                     </div>
                     <div class="table__footer--total">
                         <p>Grand Total</p>
-                        <span>$ 1200</span>
+                        <span>$ {{ Total() }}</span>
                     </div>
                 </div>
             </div>
