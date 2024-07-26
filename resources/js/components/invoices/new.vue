@@ -9,12 +9,14 @@
     let customer_id = ref([]);
     let item = ref([]);
     let listCart = ref([]);
-    let showModal = ref(false);
-    let hideModal = ref(true);
+    const showModal = ref(false);
+    const hideModal = ref(true);
+    let listProducts= ref([]);
 
     onMounted(async() => {
         indexForm()
         getAllCustomers()
+        getProducts()
 
     })
     
@@ -37,7 +39,9 @@
         quantity :item.quantity,
        }
        listCart.value.push(itemCart);
+       closeModel();
     };
+    
     const openModal = ()=>{
       showModal.value =! showModal.value;
     };
@@ -45,6 +49,18 @@
     const closeModel = ()=>{
       showModal.value =! hideModal.value;
     };
+
+    const removeItem = (i)=>{
+        listCart.value.splice(i, 1);
+    };
+
+    const getProducts = async()=>{
+        let response = await axios.get("/api/products");
+        console.log(response);
+        listProducts.value = response.data.products;
+    };
+
+   
 
 
 </script>
@@ -99,7 +115,7 @@
                 </div>
     
                 <!-- item 1 -->
-                <div class="table--items2" v-for="(itemCart) in listCart" :key="itemCart.id" >
+                <div class="table--items2" v-for="(itemCart , i) in listCart" :key="itemCart.id" >
                     <p>#{{ itemCart.id }} {{ itemCart.description }}</p>
                     <p>
                         <input type="text" class="input" v-model="itemCart.unit_price" >
@@ -111,9 +127,9 @@
                         $ {{ (itemCart.quantity) * (itemCart.unit_price)  }}
                     </p>
                     <p v-else>
-                        $ 0
+                     
                     </p>
-                    <p style="color: red; font-size: 24px;cursor: pointer;">
+                    <p style="color: red; font-size: 24px;cursor: pointer;" @click="removeItem(i)">
                         &times;
                     </p>
                 </div>
@@ -165,11 +181,19 @@
             <span class="modal__close btn__close--modal" @click="closeModel()">×</span>
             <h3 class="modal__title">Add Item</h3>
             <hr><br>
-            <div class="modal__items">
-                <select class="input my-1">
+            <div className="  modal__items">
+
+                <ul class=" w-full list-none">
+                    <li class="flex justify-between items-center p-4 hover:bg-neutral-300" v-for="(item) in listProducts" :key="item.id">
+                        <p class="text-center flex-1 text-black">{{ item.item_code }} {{ item.description }}</p>
+                        <button class="ml-4 transition ease-in-out delay-120 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 text-white px-4 py-2 rounded-md drop-shadow-2xl" @click="addCart(item)">+</button>
+                    </li>
+                </ul>
+
+                <!-- <select class="input my-1">
                     <option value="None">None</option>
                     <option value="None">LBC Padala</option>
-                </select>
+                </select> -->
             </div>
             <br><hr>
             <div class="model__footer">

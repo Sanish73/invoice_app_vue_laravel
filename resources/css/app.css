@@ -24,6 +24,12 @@
 }
 
 @layer components {
+    ul {
+        @apply list-disc list-inside p-0 m-0;
+    }
+    li {
+        @apply mb-2 text-slate-700;
+    }
     input[type="text"],
     input[type="email"],
     input[type="password"],
