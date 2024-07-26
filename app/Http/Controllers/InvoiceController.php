@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Counter;
 use Carbon\Carbon;
 
@@ -18,41 +19,75 @@ class InvoiceController extends Controller
         ],200);
     }
 
-    public function add_invoice(Request $request){
-        $invoiceItem =$request->input('invoice_item');
+    public function add_invoice(Request $request)
+    {
+        $rules = [
+            'Customer_Id' => 'required|integer|exists:customers,id',
+            'date' => 'required|date',
+            'due_date' => 'required|date|after_or_equal:date',
+            'number' => 'required|string|max:255',
+            'reference' => 'nullable|string|max:255',
+            'discount' => 'nullable|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'terms_and_conditions' => 'nullable|string',
+            'invoice_item' => 'required|json', // Validate that invoice_item is a valid JSON string
+        ];
+        $validatedData = $request->validate($rules);
 
-        // Retrieve other fields
-        $invoiceItem['Customer_Id'] = $request->input('Customer_Id');
-        $invoiceItem['data'] = $request->input('data');
-        $invoiceItem['due_date'] = $request->input('due_date');
-        $invoiceItem['number'] = $request->input('number');
-        $invoiceItem['reference'] = $request->input('reference');
-        $invoiceItem['discount'] = $request->input('discount');
-        $invoiceItem['subtotal'] = $request->input('subtotal');
-        $invoiceItem['total'] = $request->input('total');
-        $invoiceItem['terms_and_conditions'] = $request->input('terms_and_conditions');
+        $invoiceItemsJson = $validatedData['invoice_item'];
+        $invoiceItemsArray = json_decode($invoiceItemsJson, true);
 
-        // Process the data (e.g., save to database, validate, etc.)
-        // Example:
-        // $invoice = new Invoice();
-        // $invoice->customer_id = $customerId;
-        // $invoice->date = $date;
-        // $invoice->due_date = $dueDate;
-        // $invoice->number = $number;
-        // $invoice->reference = $reference;
-        // $invoice->discount = $discount;
-        // $invoice->subtotal = $subtotal;
-        // $invoice->total = $total;
-        // $invoice->terms_and_conditions = $termsAndConditions;
-        // $invoice->save();
+        // Prepare invoice data for creation
+        $invoiceData = [
+            'Customer_Id' => $validatedData['Customer_Id'],
+            'date' => $validatedData['date'],
+            'due_date' => $validatedData['due_date'],
+            'number' => $validatedData['number'],
+            'reference' => $validatedData['reference'],
+            'discount' => $validatedData['discount'],
+            'sub_total' => $validatedData['subtotal'],
+            'total' => $validatedData['total'],
+            'terms_and_conditions' => $validatedData['terms_and_conditions'],
+        ];
 
-     
-        return response()->json([
-            'success' => true,
-            'data' =>$invoiceItem['data'],
-            'message' => 'Invoice added successfully'
-        ]);
+        try {
+            $invoice = Invoice::create($invoiceData);
+           
+
+            foreach ($invoiceItemsArray as $item) {
+                $itemData = [
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'product_id' => $item['id'],
+                    'invoice_id' => $invoice->id,
+                ];
+            }
+          
+
+            try {
+                $invoiceItem = InvoiceItem::create($itemData);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to create InvoiceItem',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Invoice added successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create invoice',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     public function search_invoices(Request $req){
        $search = $req->get('s');

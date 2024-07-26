@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class InvoiceItem extends Model
 {
     use HasFactory;
+
+    protected $fillable=[
+       'quantity',
+        'unit_price' ,
+        'invoice_id',
+        'product_id'
+    ];
 }

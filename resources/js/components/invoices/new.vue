@@ -71,33 +71,34 @@ import router from '../../router';
         listProducts.value = response.data.products;
     };
 
-    const onSave = ()=>{
-        if(listCart.value.length >=1){
-            let subTotals = 0;
-            subTotals = SubTotal();
+    const onSave = async()=>{
+        if (listCart.value.length >= 1) {
+            let subTotals = SubTotal();
+            let total = Total();
 
-            let total = 0;
-            total = Total();
-
-            const formData = new FormData()
-            formData.append('invoice_item' ,JSON.stringify(listCart.value));
+            const formData = new FormData();
+            formData.append('invoice_item', JSON.stringify(listCart.value));
             
-            formData.append('Customer_Id' ,customer_id.value );
-            formData.append('invoice item' ,listCart.value);
-            formData.append('data' ,form.value.date);
-            formData.append('due_date' ,form.value.due_date);
-            formData.append('number' ,form.value.number);
-            formData.append('reference' ,form.value.reference);
-            formData.append('discount' ,form.value.discount);
-            formData.append('subtotal' ,form.value.subtotal);
-            formData.append('total' ,form.value.total);
-            formData.append('terms_and_conditions' ,form.value.terms_and_conditions);
-            
-            axios.post("/api/add_invoice" ,formData);
-            listCart.value = [];
-            router.push('/');            
+            formData.append('Customer_Id', customer_id.value);
+            formData.append('date', form.value.date);
+            formData.append('due_date', form.value.due_date);
+            formData.append('number', form.value.number);
+            formData.append('reference', form.value.reference);
+            formData.append('discount', form.value.discount);
+            formData.append('subtotal', subTotals); // Use the calculated subtotal
+            formData.append('total', total); // Use the calculated total
+            formData.append('terms_and_conditions', form.value.terms_and_conditions);
 
-
+            try {
+                console.log(listCart.value);
+                const response = await axios.post("/api/add_invoice", formData);
+                listCart.value = [];
+                router.push('/');
+            } catch (error) {
+                console.error(error.response.data);
+            }
+        } else {
+            console.error("Cart is empty");
         }
     };
     
@@ -123,9 +124,9 @@ import router from '../../router';
             <div class="card__content--header">
                 <div>
                     <p class="my-1">Customer</p>
-                    <select name="" id="" class="input" v-model="customer_id"> 
-                        <option disabled>Select Customers</option>
-                        <option v-for="customer in allCustomers" :key="customer.id">
+                    <select name="" id="" class="input" v-model="customer_id">
+                        <option disabled value="">Select Customers</option>
+                        <option v-for="customer in allCustomers" :key="customer.id" :value="customer.id">
                             {{ customer.firstname }}
                         </option>
                     </select>
