@@ -12,12 +12,17 @@ use Carbon\Carbon;
 
 class InvoiceController extends Controller
 {
-    public function get_all_invoice(){
-        $invoices = Invoice::with('customer')->orderBy('id', 'ASC')->get();
-        return response()->json([
-            'invoices' =>$invoices,
-        ],200);
+    public function get_all_invoice(Request $request){
+      
+        $perPage = $request->input('per_page',5);  
+        $invoices = Invoice::with('customer')->orderBy('id', 'ASC')->paginate($perPage);
+            return response()->json([
+                'invoices' =>$invoices,
+            ],200);
     }
+
+   
+
 
     public function add_invoice(Request $request)
     {
@@ -31,14 +36,14 @@ class InvoiceController extends Controller
             'subtotal' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
             'terms_and_conditions' => 'nullable|string',
-            'invoice_item' => 'required|json', // Validate that invoice_item is a valid JSON string
+            'invoice_item' => 'required|json',
         ];
         $validatedData = $request->validate($rules);
 
         $invoiceItemsJson = $validatedData['invoice_item'];
         $invoiceItemsArray = json_decode($invoiceItemsJson, true);
 
-        // Prepare invoice data for creation
+      
         $invoiceData = [
             'Customer_Id' => $validatedData['Customer_Id'],
             'date' => $validatedData['date'],
@@ -79,6 +84,7 @@ class InvoiceController extends Controller
                 'success' => true,
                 'message' => 'Invoice added successfully'
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
