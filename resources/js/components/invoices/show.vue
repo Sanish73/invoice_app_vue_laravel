@@ -1,40 +1,34 @@
 <script setup>
-import axios from 'axios';
-import { onMounted, ref } from 'vue';
+    import axios from 'axios';
+    import { onMounted, ref } from 'vue';
 
-
-
- onMounted(async()=>{
+    onMounted(async()=>{
     showSelectedInvoices()
- })
+    })
 
- let form = ref({id: ''});
+    let form = ref({id: ''});
 
 
- const props = defineProps({
+    const props = defineProps({
     id:{
         type:String,
         dafualt:''
     }
- });
+    });
 
- 
- 
- const showSelectedInvoices = async () => {
-    try {
-        const response = await fetch(`/api/show_Invoices_selec/${props.id}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    const showSelectedInvoices = async () => {
+        try {
+            const response = await fetch(`/api/show_Invoices_selec/${props.id}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            form.value = data;
+        } catch (error) {
+            console.error('Error fetching invoices:', error);
         }
-        const data = await response.json();
-        form.value = data;
-        console.log(data.invoice_item);
-    } catch (error) {
-        console.error('Error fetching invoices:', error);
-    }
-};
+    };
   
-
 </script>
 <template>
 <div class="container" style="margin-top: 0 !important;">   
@@ -132,10 +126,10 @@ import { onMounted, ref } from 'vue';
                 <!-- item 1 -->
                 <div class="table--items3" v-for="(itemsInvoice,i) in form.invoice_item " :key="i">
                     <p>1</p>
-                    <p>Lorem Ipsum is simply dummy text</p>
-                    <p>$ 300</p>
-                    <p>1</p>
-                    <p>$ 300</p>
+                    <p>{{ itemsInvoice.product_list.description }}</p>
+                    <p>$ {{ itemsInvoice.unit_price }}</p>
+                    <p>{{ itemsInvoice.quantity }}</p>
+                    <p>$ {{ (itemsInvoice.quantity *itemsInvoice.unit_price )  }}</p>
                 </div>
                
             </div>
