@@ -19,8 +19,7 @@
 
     const getInvoices = async(page = 1) => {
         let response = await axios.get(`/api/get_all_invoice?page=${page}`);
-        console.log(response.data.invoices);
-        
+        // console.log(response.data.invoices);
         invoices.value = response.data.invoices.data;
         per_Page.value = response.data.invoices.per_page;
         currentPage.value = response.data.invoices.current_page;
@@ -48,6 +47,20 @@
             getInvoices(currentPage.value - 1);
         }
     };
+    const onShow = (id) => {
+            router.push('/invoices/show'+id);
+    };
+    const returnIndexNum = (fromNum, toNum) => {
+    const result = [];
+    for (let i = fromNum; i <= toNum; i++) {
+        result.push(i);
+    }
+    return result;
+};
+
+// Example usage:
+console.log(returnIndexNum(1, 5)); // Output: [1, 2, 3, 4, 5]
+
 </script>
 <template>
     <div class="container">
@@ -112,8 +125,8 @@
                     </div>
 
                     <div class="table--rows min-h-[224px]" v-if="invoices.length > 0">
-                        <div class="table--items" v-for="item in invoices" :key="item.id">
-                            <a href="#" class="table--items--transactionId">#{{ item.id }}</a>
+                        <div class="table--items" v-for="(item ,i ) in invoices" :key="item.id">
+                            <a href="#" @click="onShow(item.id)" class="table--items--transactionId">#{{ returnIndexNum(from , to)[i] }}</a>
                             <p>{{ item.date }}</p>
                             <p>#{{ item.number }}</p>
                             <p class="overflow-hidden whitespace-nowrap overflow-ellipsis" v-if="item.customer">

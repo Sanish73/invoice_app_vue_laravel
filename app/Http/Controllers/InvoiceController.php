@@ -7,13 +7,9 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Counter;
 use Carbon\Carbon;
-
-
-
 class InvoiceController extends Controller
 {
     public function get_all_invoice(Request $request){
-      
         $perPage = $request->input('per_page',5);  
         $invoices = Invoice::with('customer')->orderBy('id', 'ASC')->paginate($perPage);
             return response()->json([
@@ -21,8 +17,17 @@ class InvoiceController extends Controller
             ],200);
     }
 
-   
 
+    public function show_Selected_Invoices($id)
+    {
+        $invoice = Invoice::with(['customer' , 'invoice_item'])->find($id);
+
+        if (!$invoice) {
+            return response()->json(['error' => 'Invoice not found'], 404);
+        }
+
+        return response()->json($invoice);
+    }
 
     public function add_invoice(Request $request)
     {
@@ -43,7 +48,6 @@ class InvoiceController extends Controller
         $invoiceItemsJson = $validatedData['invoice_item'];
         $invoiceItemsArray = json_decode($invoiceItemsJson, true);
 
-      
         $invoiceData = [
             'Customer_Id' => $validatedData['Customer_Id'],
             'date' => $validatedData['date'],
@@ -58,8 +62,6 @@ class InvoiceController extends Controller
 
         try {
             $invoice = Invoice::create($invoiceData);
-           
-
             foreach ($invoiceItemsArray as $item) {
                 $itemData = [
                     'quantity' => $item['quantity'],
@@ -68,8 +70,6 @@ class InvoiceController extends Controller
                     'invoice_id' => $invoice->id,
                 ];
             }
-          
-
             try {
                 $invoiceItem = InvoiceItem::create($itemData);
             } catch (\Exception $e) {
@@ -97,27 +97,24 @@ class InvoiceController extends Controller
 
     public function search_invoices(Request $req){
        $search = $req->get('s');
-       if ($search != null) {
-        $invoices = Invoice::with('customer')
-                    ->whereHas('customer', function($query) use ($search) {
-                        $query->where('firstname', 'LIKE', "%$search%");
-                     })->get();
-        return response()->json([
-            'invoices' => $invoices,
-        ], 200);
-    } else {
-        return $this->get_all_invoice();
-    }
+        if ($search != null) {
+            $invoices = Invoice::with('customer')
+                        ->whereHas('customer', function($query) use ($search) {
+                            $query->where('firstname', 'LIKE', "%$search%");
+                        })->get();
+            return response()->json([
+                'invoices' => $invoices,
+            ], 200);
+        } else {
+            return $this->get_all_invoice();
+        }
     }
 
     public function create_invoice(Request $reqest){
         $currentDate = Carbon::now()->format('Y-m-d');
-
         $counter = Counter::where('key' ,'invoice')->first();
         $random = Counter::where('key' , 'invoice')->first();
-        
         $invoice = Invoice::orderBy('id', 'DESC')->first();
-
         if($invoice){
             $invoice_number = $invoice->id + 1;
             $counters = $counter->value + $invoice_number;
@@ -146,5 +143,7 @@ class InvoiceController extends Controller
         ];
         return response()->json($formData,200);
     }
+
+    
 
 }
