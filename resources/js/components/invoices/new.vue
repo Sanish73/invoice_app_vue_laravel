@@ -34,7 +34,7 @@ import router from '../../router';
     const addCart = (item)=>{
        const itemCart = {
             id:item.id,
-            iteam_cart:item.ite_code,
+            iteam_code:item.item_code,
             description :item.description,
             unit_price: item.unit_price,
             quantity :item.quantity ?? 1,
@@ -50,6 +50,7 @@ import router from '../../router';
         }))
         return total;
     };
+    
     const Total = ()=>{
         return SubTotal() - form.value.discount;
     };
@@ -85,8 +86,8 @@ import router from '../../router';
             formData.append('number', form.value.number);
             formData.append('reference', form.value.reference);
             formData.append('discount', form.value.discount);
-            formData.append('subtotal', subTotals); // Use the calculated subtotal
-            formData.append('total', total); // Use the calculated total
+            formData.append('subtotal', subTotals); 
+            formData.append('total', total); 
             formData.append('terms_and_conditions', form.value.terms_and_conditions);
 
             try {

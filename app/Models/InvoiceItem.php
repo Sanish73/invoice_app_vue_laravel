@@ -15,4 +15,8 @@ class InvoiceItem extends Model
         'invoice_id',
         'product_id'
     ];
+
+    public function product_list(){
+        return $this->belongsTo(Product::class , 'product_id');
+    }
 }

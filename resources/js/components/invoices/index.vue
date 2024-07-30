@@ -50,16 +50,15 @@
     const onShow = (id) => {
             router.push('/invoices/show'+id);
     };
-    const returnIndexNum = (fromNum, toNum) => {
-    const result = [];
-    for (let i = fromNum; i <= toNum; i++) {
-        result.push(i);
-    }
-    return result;
-};
 
-// Example usage:
-console.log(returnIndexNum(1, 5)); // Output: [1, 2, 3, 4, 5]
+    const returnIndexNum = (fromNum, toNum) => {
+        const result = [];
+        for (let i = fromNum; i <= toNum; i++) {
+            result.push(i);
+        }
+        return result;
+    };
+
 
 </script>
 <template>

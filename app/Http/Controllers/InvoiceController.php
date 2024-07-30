@@ -20,7 +20,7 @@ class InvoiceController extends Controller
 
     public function show_Selected_Invoices($id)
     {
-        $invoice = Invoice::with(['customer' , 'invoice_item'])->find($id);
+        $invoice = Invoice::with(['customer' , 'invoice_item.product_list'])->find($id);
 
         if (!$invoice) {
             return response()->json(['error' => 'Invoice not found'], 404);
@@ -61,25 +61,18 @@ class InvoiceController extends Controller
         ];
 
         try {
+            
             $invoice = Invoice::create($invoiceData);
-            foreach ($invoiceItemsArray as $item) {
-                $itemData = [
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'product_id' => $item['id'],
-                    'invoice_id' => $invoice->id,
-                ];
-            }
-            try {
-                $invoiceItem = InvoiceItem::create($itemData);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to create InvoiceItem',
-                    'error' => $e->getMessage()
-                ], 500);
-            }
-
+                foreach ($invoiceItemsArray as $item) {
+                    $itemData = [
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['unit_price'],
+                        'product_id' => $item['id'],
+                        'invoice_id' => $invoice->id,
+                    ];
+                    $invoiceItem = InvoiceItem::create($itemData);
+                       
+                }
             return response()->json([
                 'success' => true,
                 'message' => 'Invoice added successfully'

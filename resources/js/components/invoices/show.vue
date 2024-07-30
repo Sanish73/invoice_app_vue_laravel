@@ -23,14 +23,12 @@ import { onMounted, ref } from 'vue';
  const showSelectedInvoices = async () => {
     try {
         const response = await fetch(`/api/show_Invoices_selec/${props.id}`);
-        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const data = await response.json();
         form.value = data;
-        console.log(data);
+        console.log(data.invoice_item);
     } catch (error) {
         console.error('Error fetching invoices:', error);
     }
@@ -132,64 +130,14 @@ import { onMounted, ref } from 'vue';
                 </div>
     
                 <!-- item 1 -->
-                <div class="table--items3">
+                <div class="table--items3" v-for="(itemsInvoice,i) in form.invoice_item " :key="i">
                     <p>1</p>
                     <p>Lorem Ipsum is simply dummy text</p>
                     <p>$ 300</p>
                     <p>1</p>
                     <p>$ 300</p>
                 </div>
-                <div class="table--items3">
-                    <p class="table--items--col2">
-                        2
-                    </p>
-                    <p  class="table--items--col1 table--items--transactionId3">
-                        Lorem Ipsum is simply dummy text 
-                    </p>
-                    <p class="table--items--col2">
-                        $ 300
-                    </p>
-                    <p class="table--items--col3">
-                        1
-                    </p>
-                    <p class="table--items--col5">
-                        $ 300
-                    </p>
-                </div>
-                <div class="table--items3">
-                    <p class="table--items--col2">
-                        3
-                    </p>
-                    <p  class="table--items--col1 table--items--transactionId3">
-                        Lorem Ipsum is simply dummy text 
-                    </p>
-                    <p class="table--items--col2">
-                        $ 300
-                    </p>
-                    <p class="table--items--col3">
-                        1
-                    </p>
-                    <p class="table--items--col5">
-                        $ 300
-                    </p>
-                </div>
-                <div class="table--items3">
-                    <p class="table--items--col2">
-                        4
-                    </p>
-                    <p  class="table--items--col1 table--items--transactionId3">
-                        Lorem Ipsum is simply dummy text 
-                    </p>
-                    <p class="table--items--col2">
-                        $ 300
-                    </p>
-                    <p class="table--items--col3">
-                        1
-                    </p>
-                    <p class="table--items--col5">
-                        $ 300
-                    </p>
-                </div>
+               
             </div>
 
             <div  class="invoice__subtotal">
