@@ -1,12 +1,14 @@
 <script setup>
     import axios from 'axios';
     import { onMounted, ref } from 'vue';
+    import router from '../../router';
 
     onMounted(async()=>{
     showSelectedInvoices()
     })
 
     let form = ref({id: ''});
+    const isHidden =ref(false); 
 
 
     const props = defineProps({
@@ -28,57 +30,81 @@
             console.error('Error fetching invoices:', error);
         }
     };
+
+    const printData =()=>{
+        isHidden.value =!   isHidden.value;
+
+        function waitForPrintToFinish() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    window.print();
+                    resolve();
+                }, 1000); 
+            });
+        }
+
+        waitForPrintToFinish().then(() => {
+            isHidden.value = !isHidden.value;
+            router.push('/').catch(() => {});
+        }).then(() => {
+            console.log("Navigation successful");
+        }).catch(error => {
+            console.error("Error occurred:", error); 
+        });
+    }
   
 </script>
 <template>
 <div class="container" style="margin-top: 0 !important;">   
     <div class="invoices">
-        <div class="card__header">
-            <div>
-                <h2 class="invoice__title">Invoice</h2>
-            </div>
-            <div>
-                
-            </div>
-        </div>
-        <div>
-            <div class="card__header--title ">
-                <h1 class="mr-2">#{{form.id}}</h1>
-                <p>{{form.created_at}}</p>
-            </div>
-    
-            <div>
-                <ul  class="card__header-list">
-                    <li>
-                        <button class="selectBtnFlat">
-                            <i class="fas fa-print"></i>
-                            Print
-                        </button>
-                    </li>
-                    <li>
-                        <!-- Select Btn Option -->
-                        <button class="selectBtnFlat">
-                            <i class=" fas fa-reply"></i>
-                            Edit
-                        </button>
-                        <!-- End Select Btn Option -->
-                    </li>
-                    <li>
-                        <!-- Select Btn Option -->
-                        <button class="selectBtnFlat ">
-                            <i class=" fas fa-pencil-alt"></i>
-                            Delete
-                        </button>
-                        <!-- End Select Btn Option -->
-                    </li>
+        <div :class="{hidden : isHidden}">
+            <div class="card__header">
+                <div>
+                    <h2 class="invoice__title">Invoice</h2>
+                </div>
+                <div>
                     
-                </ul>
+                </div>
+            </div>
+            <div>
+                <div class="card__header--title ">
+                    <h1 class="mr-2">#{{form.id}}</h1>
+                    <p>{{form.created_at}}</p>
+                </div>
+        
+                <div>
+                    <ul  class="card__header-list">
+                        <li>
+                            <button class="selectBtnFlat" @click="printData()">
+                                <i class="fas fa-print"></i>
+                                Print
+                            </button>
+                        </li>
+                        <li>
+                            <!-- Select Btn Option -->
+                            <button class="selectBtnFlat">
+                                <i class=" fas fa-reply"></i>
+                                Edit
+                            </button>
+                            <!-- End Select Btn Option -->
+                        </li>
+                        <li>
+                            <!-- Select Btn Option -->
+                            <button class="selectBtnFlat ">
+                                <i class=" fas fa-pencil-alt"></i>
+                                Delete
+                            </button>
+                            <!-- End Select Btn Option -->
+                        </li>
+                        
+                    </ul>
+                </div>
             </div>
         </div>
 
         <div class="table invoice">
             <div class="logo">
-                <img src="../../../../assets/img/logo.png" alt="" style="width: 200px;">
+                <img src="../../../../assets/img/logo.png" alt="" style="width: 200px;"/>
             </div>
             <div class="invoice__header--title">
                 <p></p>
@@ -123,9 +149,8 @@
                     <p>Total</p>
                 </div>
     
-                <!-- item 1 -->
                 <div class="table--items3" v-for="(itemsInvoice,i) in form.invoice_item " :key="i">
-                    <p>1</p>
+                    <p>{{ i + 1 }}</p>
                     <p>{{ itemsInvoice.product_list.description }}</p>
                     <p>$ {{ itemsInvoice.unit_price }}</p>
                     <p>{{ itemsInvoice.quantity }}</p>
@@ -154,7 +179,7 @@
             <div class="invoice__total">
                 <div>
                     <h2>Terms and Conditions</h2>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+                    <p>{{ form.terms_and_conditions }}</p>
                 </div>
                 <div>
                     <div class="grand__total" >
