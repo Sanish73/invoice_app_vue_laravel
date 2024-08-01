@@ -52,6 +52,12 @@
             console.error("Error occurred:", error); 
         });
     }
+
+    const onEdit =(id) =>{
+            router.push('/invoice/edit'+id);
+            // console.log('hooooo00');
+            
+        }
   
 </script>
 <template>
@@ -81,20 +87,16 @@
                             </button>
                         </li>
                         <li>
-                            <!-- Select Btn Option -->
-                            <button class="selectBtnFlat">
+                            <button class="selectBtnFlat" @click="onEdit(form.id)">
                                 <i class=" fas fa-reply"></i>
                                 Edit
                             </button>
-                            <!-- End Select Btn Option -->
                         </li>
                         <li>
-                            <!-- Select Btn Option -->
                             <button class="selectBtnFlat ">
                                 <i class=" fas fa-pencil-alt"></i>
                                 Delete
                             </button>
-                            <!-- End Select Btn Option -->
                         </li>
                         
                     </ul>
@@ -206,5 +208,5 @@
     </div>
 </div>
 
-    <br><br><br>
+    <br/><br/><br/>
 </template>
