@@ -3,8 +3,8 @@ import NotFound from "../components/NotFound.vue";
 import InvoiceIndex from "../components/invoices/index.vue";
 import InvoiceNew from "../components/invoices/new.vue";
 import InvoiceShow from "../components/invoices/show.vue";
+import ShowTablePractice from "../components/invoices/parentTable.vue";
 import EditInvoice from "../components/invoices/editInvoice.vue";
-
 
 const router = createRouter({
     history: createWebHistory(),
@@ -16,6 +16,10 @@ const router = createRouter({
         {
             path: '/invoices/new',
             component: InvoiceNew 
+        },
+        {
+            path: '/demo/showTablePractice',
+            component: ShowTablePractice 
         },
         {
             path: '/invoice/edit:id',

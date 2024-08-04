@@ -1,7 +1,11 @@
 <script setup>
     import axios from 'axios';
     import {onMounted, ref} from 'vue';
-    import {useRoute, useRouter} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router';
+    import customServiceInstance from '../includes/CustomService';
+
+    // #try to do like sesrvice provider in laravel
+   const messageProvider= customServiceInstance.doSomething()
 
     const router = useRouter();
     let invoices = ref([]);
@@ -50,6 +54,7 @@
     const onShow = (id) => {
             router.push('/invoices/show'+id);
     };
+ 
 
     const returnIndexNum = (fromNum, toNum) => {
         const result = [];
@@ -57,6 +62,9 @@
             result.push(i);
         }
         return result;
+    };
+    const showTablePractice = () => {
+            router.push('/demo/showTablePractice');
     };
 
 
@@ -68,13 +76,22 @@
 
                 <div class="card__header">
                     <div>
-                        <h2 class="invoice__title">Invoices</h2>
+                        <h2 class="invoice__title">{{messageProvider??'Invoices'}}</h2>
                     </div>
-                    <div>
-                        <a class="btn btn-secondary" @click="newInvoice">
-                            New Invoice
-                        </a>
+                    <div class='flex gap-4'>
+                        <div @click="showTablePractice()">
+                            <a class="btn btn-secondary">
+                            Show Table prac.
+                            </a>
+                        </div>
+                        <div>
+                            <a class="btn btn-secondary" @click="newInvoice">
+                                New Invoice
+                            </a>
+                        </div>
                     </div>
+                   
+                   
                 </div>
 
                 <div class="table card__content w-full">

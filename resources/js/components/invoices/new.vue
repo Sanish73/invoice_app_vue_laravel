@@ -2,7 +2,7 @@
 
     import axios from 'axios';
     import { onMounted  , ref} from 'vue';
-import router from '../../router';
+    import router from '../../router';
 
 
     let form = ref([]);

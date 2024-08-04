@@ -137,6 +137,18 @@ class InvoiceController extends Controller
         return response()->json($formData,200);
     }
 
+
+    public function get_All_Invoice_customer()
+    {
+        $invoice = Invoice::with('customer','invoice_item')->get();
+
+        if (!$invoice) {
+            return response()->json(['error' => 'Invoice not found'], 404);
+        }
+
+        return response()->json($invoice, 200);
+    }
+
     
 
 }
